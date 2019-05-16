@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <script src="https://aframe.io/releases/0.9.0/aframe.min.js"></script>
+</head>
+<body>
+  <a-scene>
+    <a-sky src="360.jpg"></a-sky>
+  <a-camera>
+      <a-text id="score-element" value="Score" position="-0.35 0.5 -1.5"></a-text>
+      <a-cursor></a-cursor>
+    </a-camera>
+  </a-scene>
+
+  <a-box id="heart-model" position="0 0.5 -5"
+    scale="1 1 1"
+    animation="property: rotation; to: 0 360 0; loop: true; easing: linear; dur: 2000"
+    animation__collect="property: position; to: 0 0 0; dur: 300; startEvents: collected"
+    animation__minimize="property: scale; to: 0 0 0; dur: 300; startEvents: collected"></a-box>
+
+  <script>
+    const scene = document.querySelector("a-scene");
+    const box = document.querySelector("#heart-model");
+    const score = document.querySelector('#score-element');
+
+    function randomPosition() {
+      return {
+        x: (Math.random() - 0.5) * 30,
+        y: 0.5,
+        z: (Math.random() - 0.5) * 30
+      };
+    }
+
+    let s = 0;
+
+    function displayScore() {
+      score.setAttribute('value', 'Score: '+s);
+    }
+
+    function createBox(){
+      const clone = box.cloneNode();
+      clone.setAttribute("position", randomPosition())
+      clone.addEventListener('mousedown', () => {
+        s++;
+        clone.dispatchEvent(new Event('collected'));
+        displayScore();
+      });
+      clone.addEventListener('animationcomplete', () => {
+        clone.setAttribute("position", randomPosition());
+        clone.setAttribute('scale', '0.01 0.01 0.01');
+      });
+      scene.appendChild(clone)
+    }
+
+    for(let i=0 ; i<20; i++){
+      createBox()
+    }
+    displayScore()
+  </script>
+</body>
+</html>
